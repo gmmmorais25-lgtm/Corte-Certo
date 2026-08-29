@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbearia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="tela-autenticacao">
+        <div class="autenticacao-infos">
+            <h1>Corte Certo</h1>
+            <p>Agende seu horário e conheça nossos serviços</p>
+        </div>
+
+        <div class="formulario">
+            <h2>Faça seu login</h2>
+            <form id="form-login">
+                
+                <div class="campo">
+                    <label for="email">Insira seu E-mail:</label>
+                    <input 
+                    id="email"
+                    name="email"
+                    type="email" 
+                    placeholder="joao.afonso@gmail.com" 
+                    required>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Insira sua senha:</label>
+                    <input
+                    id="senha"
+                    name="senha"
+                    type="password"
+                    required>
+                </div>
+
+                <p id="erro-login" class="mensagem-erro"></p>
+
+               <button class="botao-autenticacao"
+                type="submit"
+                id="entrar"
+                >Entrar</button>
+
+            </form>
+
+            
+        <div class="infos-conta">
+            <p><a href="cadastro.html">Criar conta</a></p>
+        </div>
+        </div>
+
+    </main>
+     <script src="api.js"></script>
+     <script src="login.js"></script>
+</body>
+</html>

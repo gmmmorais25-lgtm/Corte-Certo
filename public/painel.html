@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel - Corte Certo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="corpo-app">
+    <header class="cabecalho-app">
+        <a href="painel.html" class="logo">Corte Certo</a>
+        <div class="usuario-logado">
+            Olá, <strong id="nome-usuario"></strong> <span id="papel-usuario"></span>
+            <button class="botao-sair" id="botao-sair">Sair</button>
+        </div>
+    </header>
+
+    <main class="container-app">
+        <nav class="abas" id="abas">
+            <button class="aba" data-aba="agenda">Agenda</button>
+            <button class="aba" data-aba="expediente" data-somente="admin">Expediente</button>
+            <button class="aba" data-aba="bloqueios" data-somente="admin">Bloqueios</button>
+            <button class="aba" data-aba="servicos" data-somente="admin">Serviços</button>
+            <button class="aba" data-aba="barbeiros" data-somente="admin">Barbeiros</button>
+        </nav>
+
+        <!-- Seletor de barbeiro: só o admin vê - o barbeiro não gerencia mais
+             expediente/bloqueios/serviços, só acompanha a própria agenda. -->
+        <div class="campo-data" id="selecao-barbeiro-admin" data-somente="admin" style="display:none; max-width: 320px;">
+            <label for="select-barbeiro-foco" style="display:block; margin-bottom:0.4rem; font-size:0.9rem; color: var(--cor-texto-secundario);">Gerenciando o barbeiro:</label>
+            <select id="select-barbeiro-foco" style="width:100%; height:40px; border-radius:8px; border:1px solid var(--cor-texto-secundario); background-color: var(--cor-card); color: var(--cor-texto);"></select>
+        </div>
+
+        <!-- Agenda -->
+        <section class="painel-conteudo" id="conteudo-agenda">
+            <h2 class="secao-titulo">Agenda</h2>
+
+            <div class="campo-data">
+                <input type="date" id="input-data-agenda">
+            </div>
+            <div class="checkbox-linha">
+                <input type="checkbox" id="checkbox-agenda-completa">
+                <label for="checkbox-agenda-completa">Ver agenda completa (todas as datas, sem filtrar por dia)</label>
+            </div>
+
+            <div id="lista-agenda" class="lista-agendamentos">
+                <p class="vazio">Carregando...</p>
+            </div>
+        </section>
+
+        <!-- Expediente -->
+        <section class="painel-conteudo" id="conteudo-expediente" data-somente="admin">
+            <h2 class="secao-titulo">Expediente semanal</h2>
+            <p style="color: var(--cor-texto-secundario); margin-bottom: 1rem; max-width: 640px;">
+                Marque os dias em que há trabalho e defina o horário de início e fim de cada um. Desmarcar um dia remove o expediente dele (fica como folga).
+            </p>
+            <div id="grade-expediente" class="grade-expediente"></div>
+            <button class="botao-confirmar" id="botao-salvar-expediente" style="margin-top: 1.5rem;">Salvar expediente</button>
+        </section>
+
+        <!-- Bloqueios -->
+        <section class="painel-conteudo" id="conteudo-bloqueios" data-somente="admin">
+            <h2 class="secao-titulo">Bloqueios pontuais</h2>
+            <p style="color: var(--cor-texto-secundario); margin-bottom: 1rem; max-width: 640px;">
+                Use para folgas, feriados ou compromissos pessoais numa data específica, sem alterar o expediente semanal fixo.
+            </p>
+
+            <form class="formulario-largo" id="form-bloqueio" style="margin-bottom: 2rem;">
+                <div class="campo">
+                    <label for="bloqueio-data">Data</label>
+                    <input type="date" id="bloqueio-data" required>
+                </div>
+                <div class="checkbox-linha">
+                    <input type="checkbox" id="bloqueio-dia-inteiro" checked>
+                    <label for="bloqueio-dia-inteiro">Dia inteiro</label>
+                </div>
+                <div class="linha-dupla" id="bloqueio-horarios" style="display:none;">
+                    <div class="campo">
+                        <label for="bloqueio-inicio">Início</label>
+                        <input type="time" id="bloqueio-inicio">
+                    </div>
+                    <div class="campo">
+                        <label for="bloqueio-fim">Fim</label>
+                        <input type="time" id="bloqueio-fim">
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="bloqueio-motivo">Motivo (opcional)</label>
+                    <input type="text" id="bloqueio-motivo" placeholder="Ex: consulta médica">
+                </div>
+                <p id="erro-bloqueio" class="mensagem-erro"></p>
+                <button type="submit" class="botao-confirmar">Adicionar bloqueio</button>
+            </form>
+
+            <div id="lista-bloqueios" class="lista-agendamentos">
+                <p class="vazio">Carregando...</p>
+            </div>
+        </section>
+
+        <!-- Serviços -->
+        <section class="painel-conteudo" id="conteudo-servicos" data-somente="admin">
+            <h2 class="secao-titulo">Catálogo de serviços</h2>
+
+            <form class="formulario-largo" id="form-servico" style="margin-bottom: 2rem;">
+                <input type="hidden" id="servico-id">
+                <div class="campo">
+                    <label for="servico-nome">Nome</label>
+                    <input type="text" id="servico-nome" required>
+                </div>
+                <div class="linha-dupla">
+                    <div class="campo">
+                        <label for="servico-duracao">Duração (min)</label>
+                        <input type="number" id="servico-duracao" min="1" required>
+                    </div>
+                    <div class="campo">
+                        <label for="servico-preco">Preço (R$)</label>
+                        <input type="number" id="servico-preco" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <p id="erro-servico" class="mensagem-erro"></p>
+                <div style="display:flex; gap:0.75rem;">
+                    <button type="submit" class="botao-confirmar" id="botao-salvar-servico">Cadastrar serviço</button>
+                    <button type="button" class="botao-acao" id="botao-cancelar-edicao-servico" style="display:none;">Cancelar edição</button>
+                </div>
+            </form>
+
+            <div id="lista-servicos" class="lista-agendamentos">
+                <p class="vazio">Carregando...</p>
+            </div>
+        </section>
+
+        <!-- Barbeiros (admin) -->
+        <section class="painel-conteudo" id="conteudo-barbeiros" data-somente="admin">
+            <h2 class="secao-titulo">Barbeiros</h2>
+
+            <form class="formulario-largo" id="form-barbeiro" style="margin-bottom: 2rem;">
+                <div class="campo">
+                    <label for="barbeiro-nome">Nome</label>
+                    <input type="text" id="barbeiro-nome" required>
+                </div>
+                <div class="campo">
+                    <label for="barbeiro-email">E-mail</label>
+                    <input type="email" id="barbeiro-email" required>
+                </div>
+                <div class="linha-dupla">
+                    <div class="campo">
+                        <label for="barbeiro-telefone">Telefone</label>
+                        <input type="tel" id="barbeiro-telefone">
+                    </div>
+                    <div class="campo">
+                        <label for="barbeiro-senha">Senha provisória</label>
+                        <input type="password" id="barbeiro-senha" minlength="6" required>
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="barbeiro-foto">Foto (opcional - JPG, PNG ou WEBP, até 3MB)</label>
+                    <div class="campo-upload-foto">
+                        <label class="botao-upload-foto" for="barbeiro-foto">
+                            <span id="rotulo-barbeiro-foto">Escolher arquivo</span>
+                        </label>
+                        <input type="file" id="barbeiro-foto" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                    </div>
+                </div>
+                <p id="erro-barbeiro" class="mensagem-erro"></p>
+                <button type="submit" class="botao-confirmar">Cadastrar barbeiro</button>
+            </form>
+
+            <div id="grade-barbeiros-painel" class="grade-barbeiros"></div>
+
+            <h2 class="secao-titulo" style="margin-top: 2.5rem;">Criar novo administrador</h2>
+            <p style="color: var(--cor-texto-secundario); margin-bottom: 1rem; max-width: 640px;">
+                Só use para pessoas de confiança - um administrador tem acesso total ao sistema.
+            </p>
+            <form class="formulario-largo" id="form-admin">
+                <div class="campo">
+                    <label for="admin-nome">Nome</label>
+                    <input type="text" id="admin-nome" required>
+                </div>
+                <div class="campo">
+                    <label for="admin-email">E-mail</label>
+                    <input type="email" id="admin-email" required>
+                </div>
+                <div class="campo">
+                    <label for="admin-senha">Senha provisória</label>
+                    <input type="password" id="admin-senha" minlength="6" required>
+                </div>
+                <p id="erro-admin" class="mensagem-erro"></p>
+                <button type="submit" class="botao-confirmar">Cadastrar administrador</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="painel.js"></script>
+</body>
+</html>

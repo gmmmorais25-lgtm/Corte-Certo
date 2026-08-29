@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar horário - Corte Certo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="corpo-app">
+    <header class="cabecalho-app">
+        <a href="agendar.html" class="logo">Corte Certo</a>
+        <div class="usuario-logado">
+            Olá, <strong id="nome-usuario"></strong>
+            <button class="botao-sair" id="botao-sair">Sair</button>
+        </div>
+    </header>
+
+    <main class="container-app">
+        <section class="secao">
+            <h2 class="secao-titulo">1. Escolha o barbeiro</h2>
+            <div id="grade-barbeiros" class="grade-barbeiros">
+                <p class="vazio">Carregando barbeiros...</p>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">2. Escolha o serviço</h2>
+            <div id="grade-servicos" class="grade-servicos">
+                <p class="vazio">Carregando serviços...</p>
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">3. Escolha a data</h2>
+            <div class="campo-data">
+                <input type="date" id="input-data">
+            </div>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">4. Escolha o horário</h2>
+            <div id="grade-horarios" class="grade-horarios">
+                <p class="vazio">Selecione barbeiro, serviço e data para ver os horários disponíveis.</p>
+            </div>
+            <button class="botao-confirmar" id="botao-confirmar" disabled>Confirmar agendamento</button>
+        </section>
+
+        <section class="secao">
+            <h2 class="secao-titulo">Meus agendamentos</h2>
+            <div id="lista-meus-agendamentos" class="lista-agendamentos">
+                <p class="vazio">Carregando...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="agendar.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="tela-autenticacao">
+        <div class="autenticacao-infos">
+            <h1>Corte Certo</h1>
+            <p>Agende seu horário e conheça nossos serviços</p>
+        </div>
+
+         <div class="formulario">
+            <h2>Faça seu cadastro</h2>
+            <form id="form-cadastro">
+                
+                <div class="campo">
+                    <label for="nome">Insira seu Nome:</label>
+                    <input 
+                    id="nome"
+                    name="nome"
+                    type="text" 
+                    placeholder="João"
+                    required>
+                </div>
+
+                 <div class="campo">
+                    <label for="email">Insira seu E-mail:</label>
+                    <input 
+                    id="email"
+                    name="email"
+                    type="email" 
+                    placeholder="joao.afonso@gmail.com"
+                    required>
+                </div>
+                
+                 <div class="campo">
+                    <label for="telefone">Insira seu Telefone:</label>
+                    <input 
+                    id="telefone"
+                    name="telefone"
+                    type="tel" 
+                    placeholder="1199999-9999"
+                    required>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Crie sua Senha:</label>
+                    <input 
+                    id="senha"
+                    name="senha"
+                    type="password"
+                    required>
+                </div>
+
+                <div class="campo">
+                    <label for="confirmar-senha">Confirme sua Senha:</label>
+                    <input 
+                    id="confirmar-senha"
+                    name="confirmar-senha"
+                    type="password" 
+                    required>
+                </div>
+
+                <p id="erro-senha" class="mensagem-erro"></p>
+                
+                <button class="botao-autenticacao"
+                type="submit"
+                id="cadastrar"
+                >Cadastrar</button>
+
+            </form>
+
+                
+                <div class="infos-conta">
+                    <p>Já possui uma conta?</p>
+                    <a href="index.html">Entrar</a>
+                </div>
+                </div>
+
+    </main>
+       <script src="api.js"></script>
+       <script src="cadastro.js"></script>
+
+</body>
+</html>
