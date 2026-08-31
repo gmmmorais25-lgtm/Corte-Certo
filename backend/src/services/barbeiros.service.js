@@ -1,6 +1,5 @@
-const fs = require("fs");
-const path = require("path");
 const bcrypt = require("bcryptjs");
+const cloudinary = require("../config/cloudinary")
 const pool = require("../config/db");
 const usuariosService = require("./usuarios.service");
 
@@ -80,16 +79,12 @@ async function buscarPorUsuarioId(usuarioId) {
     return linhas[0] || null;
 }
 
-// Substitui a foto do barbeiro. Recebe o caminho relativo já salvo pelo
-// multer (ex: "/uploads/barbeiros/barbeiro-3-171234.jpg") e apaga o arquivo
-// antigo do disco em segundo plano - se não existir mais, ignora o erro.
-async function atualizarFoto(id, novaFotoUrl, fotoUrlAntiga) {
-    await pool.query("UPDATE barbeiros SET foto_url = ? WHERE id = ?", [novaFotoUrl, id]);
 
-    if (fotoUrlAntiga) {
-        const caminhoAntigo = path.join(__dirname, "..", "..", "..", "public", fotoUrlAntiga);
-        fs.unlink(caminhoAntigo, () => {});
-    }
+async function atualizarFoto(id, novaFotoUrl, fotoUrlAntiga) {
+    await pool.query(
+        "UPDATE barbeiros SET foto_url = ? WHERE id = ?",
+        [novaFotoUrl, id]
+    );
 
     return buscarPorId(id);
 }
@@ -116,11 +111,7 @@ async function reativar(id) {
     return buscarPorId(id);
 }
 
-// Exclusão de verdade (usuarios + barbeiros, via ON DELETE CASCADE), separada
-// de "desativar". Só funciona quando não há nenhum agendamento apontando
-// para esse barbeiro - a própria FK de agendamentos.barbeiro_id (sem
-// cascade, de propósito) barra a exclusão nesse caso, e aqui só traduzimos
-// esse erro do banco numa mensagem clara em vez de deixar virar um 500.
+
 async function excluirPermanentemente(id) {
     const barbeiro = await buscarPorId(id);
     if (!barbeiro) {
@@ -133,6 +124,7 @@ async function excluirPermanentemente(id) {
         erro.status = 409;
         throw erro;
     }
+
 
     try {
         await pool.query("DELETE FROM usuarios WHERE id = ?", [barbeiro.usuario_id]);
@@ -147,10 +139,14 @@ async function excluirPermanentemente(id) {
         throw erro;
     }
 
-    if (barbeiro.foto_url) {
-        const caminho = path.join(__dirname, "..", "..", "..", "public", barbeiro.foto_url);
-        fs.unlink(caminho, () => {});
-    }
+ if (barbeiro.foto_url) {
+    const publicId = `corte-certo/barbeiros/barbeiro-${id}`;
+
+    await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+        invalidate: true,
+    });
+}
 }
 
 module.exports = {
@@ -163,3 +159,4 @@ module.exports = {
     atualizarFoto,
     excluirPermanentemente,
 };
+

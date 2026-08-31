@@ -1,3 +1,4 @@
+const cloudinary = require("../config/cloudinary")
 const barbeirosService = require("../services/barbeiros.service");
 const expedientesService = require("../services/expedientes.service");
 const servicosService = require("../services/servicos.service");
@@ -65,15 +66,48 @@ async function criar(req, res, next) {
 async function atualizarFoto(req, res, next) {
     try {
         const barbeiro = await barbeirosService.buscarPorId(req.params.id);
+
         if (!barbeiro) {
-            return res.status(404).json({ erro: "Barbeiro não encontrado." });
-        }
-        if (!req.file) {
-            return res.status(400).json({ erro: "Nenhuma imagem enviada (campo 'foto')." });
+            return res.status(404).json({
+                erro: "Barbeiro não encontrado.",
+            });
         }
 
-        const fotoUrl = `/uploads/barbeiros/${req.file.filename}`;
-        const atualizado = await barbeirosService.atualizarFoto(req.params.id, fotoUrl, barbeiro.foto_url);
+        if (!req.file) {
+            return res.status(400).json({
+                erro: "Nenhuma imagem enviada (campo 'foto').",
+            });
+        }
+
+        const publicId = `barbeiro-${req.params.id}`;
+
+        const resultadoUpload = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                {
+                    folder: "corte-certo/barbeiros",
+                    public_id: publicId,
+                    overwrite: true,
+                    invalidate: true,
+                    resource_type: "image",
+                },
+                (erro, resultado) => {
+                    if (erro) {
+                        return reject(erro);
+                    }
+
+                    resolve(resultado);
+                }
+            );
+
+            stream.end(req.file.buffer);
+        });
+
+        const atualizado = await barbeirosService.atualizarFoto(
+            req.params.id,
+            resultadoUpload.secure_url,
+            barbeiro.foto_url
+        );
+
         res.json(atualizado);
     } catch (erro) {
         next(erro);
